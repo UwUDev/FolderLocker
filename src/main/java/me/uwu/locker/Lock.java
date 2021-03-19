@@ -2,6 +2,9 @@ package me.uwu.locker;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -38,7 +41,16 @@ public class Lock {
             e.printStackTrace();
         }
 
-        new ZipFile("folder.lock").addFolder(new File("lock me daddy/"));
+        ZipParameters zipParameters = new ZipParameters();
+        zipParameters.setEncryptFiles(true);
+        zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+        zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+
+
+
+        ZipFile zipFile = new ZipFile("folder.lock", pass.toCharArray());
+        zipFile.addFolder(new File("lock me daddy/"), zipParameters);
+
         crypto.crypt(new File("folder.lock"));
 
         FileUtils.deleteDirectory(new File("lock me daddy/"));

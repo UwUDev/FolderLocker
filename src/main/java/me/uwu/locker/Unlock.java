@@ -25,8 +25,9 @@ public class Unlock {
         crypto.decrypt(new File("folder.lock.temp"));
 
         try {
-            new ZipFile("folder.lock.temp").extractAll(uuid.toString() + "/");
+            new ZipFile("folder.lock.temp", Lock.pass.toCharArray()).extractAll(uuid.toString() + "/");
         } catch (Exception e){
+            e.printStackTrace();
             System.out.println("Invalid password");
             success = false;
             new File("folder.lock.temp").delete();
