@@ -1,7 +1,6 @@
 package me.uwu.locker;
 
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
@@ -22,6 +21,10 @@ public class Lock {
     public static void main(String[] args) throws IOException {
         List<File> result = new ArrayList<>();
         Crypto crypto = new Crypto(pass);
+        Crypto cryptoZip = crypto;
+        cryptoZip.seedKey(3);
+        crypto = cryptoZip;
+        crypto.seedKey(2);
 
         try (Stream<Path> walk = Files.walk(Paths.get("lock me daddy/"))) {
             walk.forEach(f -> {
@@ -30,9 +33,10 @@ public class Lock {
 
             result.forEach(System.out::println);
 
+            Crypto finalCrypto = crypto;
             result.forEach(f -> {
                 try {
-                    crypto.crypt(f);
+                    finalCrypto.crypt(f);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -51,7 +55,7 @@ public class Lock {
         ZipFile zipFile = new ZipFile("folder.lock", pass.toCharArray());
         zipFile.addFolder(new File("lock me daddy/"), zipParameters);
 
-        crypto.crypt(new File("folder.lock"));
+        cryptoZip.crypt(new File("folder.lock"));
 
         FileUtils.deleteDirectory(new File("lock me daddy/"));
     }
